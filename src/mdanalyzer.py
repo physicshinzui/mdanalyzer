@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import MDAnalysis as mda
 from MDAnalysis import Universe
 from MDAnalysis.analysis.rms import RMSD

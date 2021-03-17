@@ -5,6 +5,7 @@ from MDAnalysis.analysis.rms import RMSF
 from MDAnalysis.analysis import align
 import numpy as np
 import pandas as pd
+import argparse
 
 class MDAnalyzer():
     
@@ -52,9 +53,17 @@ class MDAnalyzer():
         pass
 
 def main():
-    ref  = '../../00_samples/sample2/ref.pdb'
-    traj = '../../00_samples/sample2/traj_aligned.xtc'
-    outsuffix = 'test'
+    p = argparse.ArgumentParser()
+    p.add_argument('-r', '--ref' , required = True)
+    p.add_argument('-i', '--traj', required = True)
+    p.add_argument('-sx', '--suffix', required = False, default = 'mda')
+    args = p.parse_args()
+    ref = args.ref 
+    traj = args.traj 
+    outsuffix = args.suffix
+    # ref  = '../../00_samples/sample2/ref.pdb'
+    # traj = '../../00_samples/sample2/traj_aligned.xtc'
+    # outsuffix = 'test'
 
     MDA = MDAnalyzer(ref, traj)
 

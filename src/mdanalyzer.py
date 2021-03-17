@@ -61,9 +61,6 @@ def main():
     ref = args.ref 
     traj = args.traj 
     outsuffix = args.suffix
-    # ref  = '../../00_samples/sample2/ref.pdb'
-    # traj = '../../00_samples/sample2/traj_aligned.xtc'
-    # outsuffix = 'test'
 
     MDA = MDAnalyzer(ref, traj)
 

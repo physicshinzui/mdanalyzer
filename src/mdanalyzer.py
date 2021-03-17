@@ -56,13 +56,17 @@ class MDAnalyzer():
     def make_hist(self):
         pass
 
-def main():
+def parser():
     p = argparse.ArgumentParser()
     p.add_argument('-r', '--ref' , required = True)
     p.add_argument('-i', '--traj', required = True)
     p.add_argument('-sx', '--suffix', required = False, default = 'mda')
     args = p.parse_args()
-    ref = args.ref 
+    return args
+
+def main():
+    args = parser()
+    ref  = args.ref 
     traj = args.traj 
     outsuffix = args.suffix
 

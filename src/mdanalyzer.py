@@ -49,7 +49,10 @@ class MDAnalyzer():
         print(f'Selection in dPCA calc.: {selection}')
         
         return 0
-        
+
+    def sasa(self, type = 'residue'):
+        pass
+
     def make_hist(self):
         pass
 

@@ -14,9 +14,9 @@ class MDAnalyzer():
         self.__universe  = Universe(ref,traj)
         self.__reference = Universe(ref)
 
-    def rmsd(self, selection = 'name CA'):
+    def rmsd(self, selection = 'name CA', rmsf_ref = self.__reference):
         print(f'Selection in RMSD calc.: {selection}')
-       
+        print(f'Reference structure in RMSD calc. : {rmsf_ref}')      
         rmsd_obj = RMSD(atomgroup  = self.__universe, 
                         referenece = self.__reference, 
                         select     = selection, 
@@ -60,6 +60,8 @@ def parser():
     p = argparse.ArgumentParser()
     p.add_argument('-r', '--ref' , required = True)
     p.add_argument('-i', '--traj', required = True)
+    p.add_argument('--sele_rmsd' , required = False, default = 'protein and name CA')
+    p.add_argument('--sele_rmsf' , required = False, default = 'protein and name CA')
     p.add_argument('-sx', '--suffix', required = False, default = 'mda')
     args = p.parse_args()
     return args
@@ -68,16 +70,19 @@ def main():
     args = parser()
     ref  = args.ref 
     traj = args.traj 
+    sele_rmsd = args.sele_rmsd
+    sele_rmsf = args.sele_rmsf
     outsuffix = args.suffix
 
     MDA = MDAnalyzer(ref, traj)
 
     #---RMSD calculation 
-    rmsd = MDA.rmsd('(resid 103:109 and name CA) or (resid 142:149 and name CA)')
+    rmsd = MDA.rmsd(sele_rmsd)    
+    #rmsd = MDA.rmsd('(resid 103:109 and name CA) or (resid 142:149 and name CA)')
     np.savetxt(f'rmsd_{outsuffix}.csv', rmsd, delimiter = ',', header = 'frame, time (ps), RMSD (A)')
 
     #---RMSF calculation
-    rmsf = MDA.rmsf()
+    rmsf = MDA.rmsf(sele_rmsf)
     pd.DataFrame(rmsf).to_csv(f'rmsf_{outsuffix}.csv', header = ['residue', 'RMSF'], index = None)
 
     #---cPCA calculation

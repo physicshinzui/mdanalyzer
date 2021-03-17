@@ -17,6 +17,9 @@ class MDAnalyzer():
         self.__ref_name  = ref
 
     def rmsd(self, selection = 'name CA', rmsd_ref_name = ''):
+        # This function uses MDAnalysis.analysis.rms.RMSD.
+        # See https://docs.mdanalysis.org/stable/documentation_pages/analysis/rms.html
+        
         # if rmsd_ref is not give, the reference that is used to create a "Universe" object is also utilised for the one in RMSD calc.
         if rmsd_ref_name == '': 
             rmsd_ref_name = self.__ref_name
@@ -92,10 +95,10 @@ def main():
     MDA = MDAnalyzer(ref, traj)
 
     #---RMSD calculation
-    # if a reference file for RMSD calc. is not given, the first frame of a trajectory is used as a reference.
+    # (1) if a reference file for RMSD calc. is not given, the first frame of a trajectory is used as a reference.
     if rmsd_ref_file == None:
         rmsd = MDA.rmsd(sele_rmsd)   
-    # if a reference file is given, it is used as a reference structure.
+    # (2) if a reference file is given, it is used as a reference structure.
     else: 
         rmsd = MDA.rmsd(sele_rmsd, rmsd_ref_file)   
 

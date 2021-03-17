@@ -13,18 +13,31 @@ class MDAnalyzer():
     def __init__(self, ref, traj):
         self.__universe  = Universe(ref,traj)
         self.__reference = Universe(ref)
+        self.__traj_name = traj
+        self.__ref_name  = ref
 
-    def rmsd(self, selection = 'name CA', rmsf_ref = self.__reference):
-        print(f'Selection in RMSD calc.: {selection}')
-        print(f'Reference structure in RMSD calc. : {rmsf_ref}')      
-        rmsd_obj = RMSD(atomgroup  = self.__universe, 
-                        referenece = self.__reference, 
+    def rmsd(self, selection = 'name CA', rmsd_ref_name = ''):
+        # if rmsd_ref is not give, the reference that is used to create a "Universe" object is also utilised for the one in RMSD calc.
+        if rmsd_ref_name == '': 
+            rmsd_ref_name = self.__ref_name
+            rmsd_ref      = self.__reference 
+        else:
+            rmsd_ref = Universe(rmsd_ref_name)
+
+        print('### RMSD calculation ###')
+        print(f'Selection           : {selection}')
+        print(f'Reference structure : {rmsd_ref_name}')      
+        print(f'    - {rmsd_ref}')      
+
+        rmsd_obj = RMSD(atomgroup = self.__universe, 
+                        reference = rmsd_ref,
                         select     = selection, 
                         groupselections = None,
                         weights = None, 
                         weights_groupselections = False,
-                        tol_mass = 0.1,
-                        ref_frame = 0)
+                        tol_mass = 0.1, 
+                        ref_frame = 0, 
+                        verbose = True)
         rmsd_obj.run(start=None, stop=None, step=None, verbose=True)
         return rmsd_obj.rmsd
                 
@@ -60,6 +73,8 @@ def parser():
     p = argparse.ArgumentParser()
     p.add_argument('-r', '--ref' , required = True)
     p.add_argument('-i', '--traj', required = True)
+    p.add_argument('--rmsd_ref'  , required = False, default = None)
+    p.add_argument('--rmsf_ref'  , required = False, default = None)
     p.add_argument('--sele_rmsd' , required = False, default = 'protein and name CA')
     p.add_argument('--sele_rmsf' , required = False, default = 'protein and name CA')
     p.add_argument('-sx', '--suffix', required = False, default = 'mda')
@@ -73,14 +88,20 @@ def main():
     sele_rmsd = args.sele_rmsd
     sele_rmsf = args.sele_rmsf
     outsuffix = args.suffix
-
+    rmsd_ref_file = args.rmsd_ref
     MDA = MDAnalyzer(ref, traj)
 
-    #---RMSD calculation 
-    rmsd = MDA.rmsd(sele_rmsd)    
-    #rmsd = MDA.rmsd('(resid 103:109 and name CA) or (resid 142:149 and name CA)')
+    #---RMSD calculation
+    # if a reference file for RMSD calc. is not given, the first frame of a trajectory is used as a reference.
+    if rmsd_ref_file == None:
+        rmsd = MDA.rmsd(sele_rmsd)   
+    # if a reference file is given, it is used as a reference structure.
+    else: 
+        rmsd = MDA.rmsd(sele_rmsd, rmsd_ref_file)   
+
     np.savetxt(f'rmsd_{outsuffix}.csv', rmsd, delimiter = ',', header = 'frame, time (ps), RMSD (A)')
 
+    exit()
     #---RMSF calculation
     rmsf = MDA.rmsf(sele_rmsf)
     pd.DataFrame(rmsf).to_csv(f'rmsf_{outsuffix}.csv', header = ['residue', 'RMSF'], index = None)

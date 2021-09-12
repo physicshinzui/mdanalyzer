@@ -104,11 +104,11 @@ def main():
 
     np.savetxt(f'rmsd_{outsuffix}.csv', rmsd, delimiter = ',', header = 'frame, time (ps), RMSD (A)')
 
-    exit()
     #---RMSF calculation
     rmsf = MDA.rmsf(sele_rmsf)
     pd.DataFrame(rmsf).to_csv(f'rmsf_{outsuffix}.csv', header = ['residue', 'RMSF'], index = None)
 
+    exit()
     #---cPCA calculation
     cPC = MDA.cartesian_PCA() 
 

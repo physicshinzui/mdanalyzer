@@ -31,6 +31,8 @@ class MDAnalyzer():
         print(f'Selection           : {selection}')
         print(f'Reference structure : {rmsd_ref_name}')      
         print(f'    - {rmsd_ref}')      
+        print(f'Generating rmsf selection PDB...')
+        rmsd_ref.select_atoms(selection).write("sele.pdb")
 
         rmsd_obj = RMSD(atomgroup = self.__universe, 
                         reference = rmsd_ref,

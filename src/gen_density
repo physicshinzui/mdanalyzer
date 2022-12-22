@@ -1,0 +1,15 @@
+#!/usr/bin/env python3
+from MDAnalysis.analysis.density import DensityAnalysis
+from MDAnalysis import Universe
+import sys
+
+print(f"\nUsage:\n    {sys.argv[0]} [ref] [xtc] [name]\n")
+TPR, XTC, name = sys.argv[1], sys.argv[2], sys.argv[3]
+u = Universe(TPR, XTC)
+sele = u.select_atoms(f"name {name.upper()}")
+D = DensityAnalysis(sele, delta=1.0)
+D.run(verbose=True)
+
+D.density.convert_density('TIP3P')
+#D.density.convert_density('nm^{-3}')
+D.density.export(f"{name}.dx", type="double")

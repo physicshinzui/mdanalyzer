@@ -3,13 +3,14 @@ from MDAnalysis.analysis.density import DensityAnalysis
 from MDAnalysis import Universe
 import sys
 
-print(f"\nUsage:\n    {sys.argv[0]} [ref] [xtc] [name]\n")
-TPR, XTC, name = sys.argv[1], sys.argv[2], sys.argv[3]
+print(f"\nUsage:\n    {sys.argv[0]} [ref] [xtc] [selection] [delta]\n")
+TPR, XTC, selection, delta = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
 u = Universe(TPR, XTC)
-sele = u.select_atoms(f"name {name.upper()}")
-D = DensityAnalysis(sele, delta=1.0)
+sele = u.select_atoms(selection)
+D = DensityAnalysis(sele, delta=delta)
 D.run(verbose=True)
 
 D.density.convert_density('TIP3P')
 #D.density.convert_density('nm^{-3}')
-D.density.export(f"{name}.dx", type="double")
+tail=selection.split()[-1]
+D.density.export(f"{tail}.dx", type="double")
